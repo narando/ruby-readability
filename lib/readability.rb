@@ -256,10 +256,10 @@ module Readability
     end
     
     def canonical_url
-      canonical_urls = @html.xpath('//meta[@name = "canonical"]')
+      canonical_urls = @html.xpath('//link[@rel = "canonical"]')
       unless canonical_urls.empty?
         canonical_urls.each do |element|
-          return element['content'].strip if element['content']
+          return element['href'].strip if element['href']
         end
       end
     end

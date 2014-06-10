@@ -202,6 +202,14 @@ module Readability
           return element.text.strip if element.text
         end
       end
+      
+      author_elements = @html.xpath('//*[@itemprop = "author"]')
+      unless author_elements.empty?
+        author_elements.each do |element|
+          return element.text.strip if element.text
+        end
+      end
+      
     end
     
     def published_at

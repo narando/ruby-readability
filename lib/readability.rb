@@ -271,6 +271,14 @@ module Readability
           return element['content'].split(",").map{ |x| x.strip } if element['content']
         end
       end
+      
+      keyword_tags = @html.xpath('//meta[@name = "news_keywords"]')
+      unless keyword_tags.empty?
+        keyword_tags.each do |element|
+          return element['content'].split(",").map{ |x| x.strip } if element['content']
+        end
+      end
+        
     end
 
     def content(remove_unlikely_candidates = :default)

@@ -76,9 +76,12 @@ module Readability
       @html = Nokogiri::HTML(@input, nil, @options[:encoding])
       # In case document has no body, such as from empty string or redirect
       @html = Nokogiri::HTML('<body />', nil, @options[:encoding]) if @html.css('body').length == 0
-
+      
       # Remove html comment tags
       @html.xpath('//comment()').each { |i| i.remove }
+      
+      @search_html = @html
+      
     end
 
     def images(content=nil, reload=false)
@@ -216,7 +219,7 @@ module Readability
       
       # Get informations form meta information
       # <meta name="date" content="2014-06-09T20:18:00+0200">
-      pub_elements = @html.xpath('//meta[@name = "date"]')
+      pub_elements = @search_html.xpath('//meta[@name = "date"]')
       unless pub_elements.empty?
         pub_elements.each do |element|
           return element['content'].strip if element['content']
@@ -225,7 +228,7 @@ module Readability
       
       # Get informations form meta information
       # <meta name="vr:published_time" content="2014-06-09T20:18:00+0200">
-      pub_elements = @html.xpath('//meta[@name = "vr:published_time"]')
+      pub_elements = @search_html.xpath('//meta[@name = "vr:published_time"]')
       unless pub_elements.empty?
         pub_elements.each do |element|
           return element['content'].strip if element['content']
@@ -234,7 +237,7 @@ module Readability
       
       # Get informations form meta information
       # <meta name="dc.date" content="2014-06-09T20:18:00+0200">
-      pub_elements = @html.xpath('//meta[@name = "dc.date"]')
+      pub_elements = @search_html.xpath('//meta[@name = "dc.date"]')
       unless pub_elements.empty?
         pub_elements.each do |element|
           return element['content'].strip if element['content']
@@ -243,7 +246,7 @@ module Readability
       
       # Get informations form meta information
       # <meta name="sailthru.date" content="2014-06-09T20:18:00+0200">
-      pub_elements = @html.xpath('//meta[@name = "sailthru.date"]')
+      pub_elements = @search_html.xpath('//meta[@name = "sailthru.date"]')
       unless pub_elements.empty?
         pub_elements.each do |element|
           return element['content'].strip if element['content']
@@ -252,7 +255,7 @@ module Readability
       
       # Get inline
       #<time class="timeformat" itemprop="datePublished" datetime="2014-06-09 20:18:00">Montag, 09.06.2014 – 20:18 Uhr</time>
-      pub_elements = @html.xpath('//time[@itemprop = "datePublished"]')
+      pub_elements = @search_html.xpath('//time[@itemprop = "datePublished"]')
       unless pub_elements.empty?
         pub_elements.each do |element|
           return element.attribute("datetime").text.strip unless element.attribute("datetime").nil?
@@ -264,7 +267,7 @@ module Readability
     end
     
     def canonical_url
-      canonical_urls = @html.xpath('//link[@rel = "canonical"]')
+      canonical_urls = @search_html.xpath('//link[@rel = "canonical"]')
       unless canonical_urls.empty?
         canonical_urls.each do |element|
           return element['href'].strip if element['href']
@@ -273,14 +276,14 @@ module Readability
     end
     
     def keywords
-      keyword_tags = @html.xpath('//meta[@name = "keywords"]')
+      keyword_tags = @search_html.xpath('//meta[@name = "keywords"]')
       unless keyword_tags.empty?
         keyword_tags.each do |element|
           return element['content'].split(",").map{ |x| x.strip } if element['content']
         end
       end
       
-      keyword_tags = @html.xpath('//meta[@name = "news_keywords"]')
+      keyword_tags = @search_html.xpath('//meta[@name = "news_keywords"]')
       unless keyword_tags.empty?
         keyword_tags.each do |element|
           return element['content'].split(",").map{ |x| x.strip } if element['content']
